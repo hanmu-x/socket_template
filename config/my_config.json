@@ -1,5 +1,5 @@
 {
-  "dem_file": "D:/1_wangyingjie/code/2_hill_shading/世界/地图/ETOPO_2022_v1_60s_N90W180_bed.tif",
+  "dem_file": "D://code/ETOPO_2022_v1_60s_N90W180_bed.tif",
   "image_out_path": "../../../../dem_data/image/",
   "proj_db_path": "./",
   "top_alpha": 0.5,     // 阴影层的透明度(数值为:0~1,0.5表示50%)
