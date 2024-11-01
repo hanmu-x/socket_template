@@ -14,10 +14,8 @@ class Socket
     /// <summary>
     /// TCP 服务端
     /// </summary>
-    /// <param name="ip"></param>
     /// <param name="port"></param>
     /// <returns></returns>
-    static bool tcpServer(std::string ip, int port);
     static bool tcpServer( int port);
 
     /// <summary>
@@ -43,6 +41,18 @@ class Socket
     /// <param name="port"></param>
     /// <returns></returns>
     static bool udpServer(std::string ip, int port);
+
+    /// <summary>
+    /// UDP socket 发送数据
+    /// </summary>
+    /// <param name="ip"></param>
+    /// <param name="port"></param>
+    /// <returns></returns>
+    static bool updSend(std::string ip, int port);
+
+
+    static bool receiveData(std::string ip, int port);
+
 
     /// <summary>
     /// 同步 UDP socket 客户端
