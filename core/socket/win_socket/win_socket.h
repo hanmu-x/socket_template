@@ -7,7 +7,6 @@
 #include <mutex>
 #include <thread>
 
-#ifdef _WIN32
 
 #include <winsock2.h>
 
@@ -87,24 +86,8 @@ class Socket
     std::mutex m_lock;  // 子线程锁
 };
 
-#elif defined(__linux__)
 
-#include <sys/socket.h>
-#include <unistd.h>
-#include <arpa/inet.h>
 
-class Socket
-{
-  public:
-    /// <summary>
-    /// TCP 服务端
-    /// </summary>
-    /// <param name="port"></param>
-    /// <returns></returns>
-    static bool tcpServer(int port);
-};
 
-#endif
-
-#endif  // SOCKET_H
+#endif // SOCKET_H
 

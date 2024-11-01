@@ -1,5 +1,10 @@
 
-#include "socket/socket.h"
+
+#ifdef _WIN32
+#include "socket/win_socket/win_socket.h"
+#elif defined(__linux__)
+#include "socket/linux_socket/linux_socket.h"
+#endif
 
 #include <filesystem>
 #include <iostream>
