@@ -30,8 +30,29 @@ class Socket
     /// <returns></returns>
     static bool tcpClientSync(std::string ip, int port);
 
+    /// <summary>
+    /// 异步 TCP socket 客户端
+    /// </summary>
+    /// <param name="ip"></param>
+    /// <param name="port"></param>
+    /// <returns></returns>
     static bool tcpClientAsyn(std::string ip, int port);
 
+    ///// <summary>
+    ///// UDP 服务端
+    ///// </summary>
+    ///// <param name="ip"></param>
+    ///// <param name="port"></param>
+    ///// <returns></returns>
+    //static bool udpServer(std::string ip, int port);
+
+    /// <summary>
+    /// UDP socket 发送数据
+    /// </summary>
+    /// <param name="ip"></param>
+    /// <param name="port"></param>
+    /// <returns></returns>
+    static bool updSend(const std::string& ip, const int& port);
 
 };
 

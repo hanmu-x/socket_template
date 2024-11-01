@@ -19,19 +19,9 @@ int main()
     //Socket::tcpServer(port);
     //return 0;
 
-     //if (Socket::tcpClientSync(ip, port))  // 同步
-    Socket so;
-    if (so.tcpClientAsyn(ip, port))  // 异步
-    {
-        std::cout << "TCP client executed successfully" << std::endl;
-    }
-    else
-    {
-        std::cout << "TCP client failed" << std::endl;
-    }
-
-    //// udp 发送
-    //if (Socket::updSend(ip, port))  // 同步
+    // //if (Socket::tcpClientSync(ip, port))  // 同步
+    //Socket so;
+    //if (so.tcpClientAsyn(ip, port))  // 异步
     //{
     //    std::cout << "TCP client executed successfully" << std::endl;
     //}
@@ -40,8 +30,18 @@ int main()
     //    std::cout << "TCP client failed" << std::endl;
     //}
 
+    // udp 发送
+    if (Socket::updSend(ip, port))  // 同步
+    {
+        std::cout << "TCP client executed successfully" << std::endl;
+    }
+    else
+    {
+        std::cout << "TCP client failed" << std::endl;
+    }
+
     //// udp 接收
-    //if (Socket::receiveData(ip, port))  // 同步
+    //if (Socket::udpReceive(ip, port))  // 同步
     //{
     //    std::cout << "TCP client executed successfully" << std::endl;
     //}

@@ -52,8 +52,13 @@ class Socket
     /// <returns></returns>
     static bool updSend(std::string ip, int port);
 
-
-    static bool receiveData(std::string ip, int port);
+    /// <summary>
+    /// UDP socket 接收数据
+    /// </summary>
+    /// <param name="ip"></param>
+    /// <param name="port"></param>
+    /// <returns></returns>
+    static bool udpReceive(std::string ip, int port);
 
 
     /// <summary>

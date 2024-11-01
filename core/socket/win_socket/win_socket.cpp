@@ -9,8 +9,6 @@
 #define RECONNECT_TIME 1000
 #define RE_READ_TIME 10
 
-#ifdef _WIN32
-
 #include <ws2tcpip.h>
 #include <winsock2.h>
 
@@ -380,22 +378,10 @@ bool Socket::updSend(std::string ip, int port)
 }
 
 
-
-
-
-
-
-
-
-
-
 bool Socket::udpServer(std::string ip, int port)
 {
     return false;
 }
-
-
-
 
 
 bool Socket::updClientSync(std::string ip, int port)
@@ -533,7 +519,7 @@ bool Socket::updClientSync(std::string ip, int port)
 //    return true;
 //}
 
-bool Socket::receiveData(std::string ip, int port)
+bool Socket::udpReceive(std::string ip, int port)
 {
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
@@ -657,17 +643,3 @@ bool Socket::updClientAsyn(std::string ip, int port)
 }
 
 
-#elif defined(__linux__)
-
-
-
-
-
-
-
-
-
-
-
-
-#endif
