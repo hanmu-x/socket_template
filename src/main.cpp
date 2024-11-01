@@ -30,18 +30,8 @@ int main()
     //    std::cout << "TCP client failed" << std::endl;
     //}
 
-    // udp 发送
-    if (Socket::updSend(ip, port))  // 同步
-    {
-        std::cout << "TCP client executed successfully" << std::endl;
-    }
-    else
-    {
-        std::cout << "TCP client failed" << std::endl;
-    }
-
-    //// udp 接收
-    //if (Socket::udpReceive(ip, port))  // 同步
+    //// udp 发送
+    //if (Socket::updSend(ip, port))  // 同步
     //{
     //    std::cout << "TCP client executed successfully" << std::endl;
     //}
@@ -49,6 +39,16 @@ int main()
     //{
     //    std::cout << "TCP client failed" << std::endl;
     //}
+
+    // udp 接收
+    if (Socket::udpReceive(ip, port))  // 同步
+    {
+        std::cout << "TCP client executed successfully" << std::endl;
+    }
+    else
+    {
+        std::cout << "TCP client failed" << std::endl;
+    }
 
 
 

@@ -44,7 +44,7 @@ void HandleClientConnection(int clientSocket)
     close(clientSocket);  // 关闭客户端套接字
 }
 
-bool Socket::tcpServer(int port)
+bool Socket::tcpServer(const int& port)
 {
     // 创建监听套接字
     int listenSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -106,8 +106,7 @@ bool Socket::tcpServer(int port)
 }
 
 
-
-bool Socket::tcpClientSync(std::string ip, int port)
+bool Socket::tcpClientSync(const std::string& ip, const int& port)
 {
     bool status = false;
 
@@ -178,7 +177,7 @@ bool Socket::tcpClientSync(std::string ip, int port)
     return true;
 }
 
-bool Socket::tcpClientAsyn(std::string ip, int port)
+bool Socket::tcpClientAsyn(const std::string& ip, const int& port)
 {
     while (true)
     {
@@ -271,7 +270,6 @@ bool Socket::tcpClientAsyn(std::string ip, int port)
 }
 
 
-
 bool Socket::updSend(const std::string& ip, const int& port)
 {
     int sockfd;
@@ -323,7 +321,59 @@ bool Socket::updSend(const std::string& ip, const int& port)
 
 
 
+bool Socket::udpReceive(const std::string& ip, const int& port)
+{
+    int sockfd;
+    struct sockaddr_in server_addr, client_addr;
+    socklen_t addr_len = sizeof(client_addr);
+    char buffer[1024];
 
+    // 创建UDP Socket
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0)
+    {
+        perror("socket");
+        return false;
+    }
+
+    // 服务器地址设置
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port);
+    //if (inet_pton(AF_INET, ip.c_str(), &server_addr.sin_addr) <= 0)
+    //{
+    //    perror("inet_pton");
+    //    close(sockfd);
+    //    return false;
+    //}
+
+    // 绑定Socket
+    if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
+    {
+        std::cout << "bind error:" << ip << ":" << port << std::endl    ;
+        perror("bind");
+        close(sockfd);
+        return false;
+    }
+
+    std::cout << "Listening for UDP messages on " << ip << ":" << port << "...\n";
+
+    // 接收数据
+    ssize_t received_bytes = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&client_addr, &addr_len);
+    if (received_bytes < 0)
+    {
+        perror("recvfrom");
+        close(sockfd);
+        return false;
+    }
+
+    buffer[received_bytes] = '\0';  // 添加字符串结束符
+    std::cout << "Received " << received_bytes << " bytes: " << buffer << std::endl;
+
+    // 关闭Socket
+    close(sockfd);
+    return true;
+}
 
 
 
