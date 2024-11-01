@@ -50,7 +50,7 @@ bool Socket::tcpServer(int port)
     int listenSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (listenSocket < 0)
     {
-        std::cerr << "Error at socket(): " << strerror(errno) << std::endl;
+        std::cout << "Error at socket(): " << strerror(errno) << std::endl;
         return false;
     }
 
@@ -62,7 +62,7 @@ bool Socket::tcpServer(int port)
     // 绑定套接字到指定的地址和端口
     if (bind(listenSocket, (struct sockaddr*)&service, sizeof(service)) < 0)
     {
-        std::cerr << "bind() failed: " << strerror(errno) << std::endl;
+        std::cout << "bind() failed: " << strerror(errno) << std::endl;
         close(listenSocket);
         return false;
     }
@@ -70,7 +70,7 @@ bool Socket::tcpServer(int port)
     // 开始监听
     if (listen(listenSocket, SOMAXCONN) < 0)
     {
-        std::cerr << "listen() failed: " << strerror(errno) << std::endl;
+        std::cout << "listen() failed: " << strerror(errno) << std::endl;
         close(listenSocket);
         return false;
     }
@@ -86,7 +86,7 @@ bool Socket::tcpServer(int port)
         int clientSocket = accept(listenSocket, (struct sockaddr*)&clientAddr, &addrLen);
         if (clientSocket < 0)
         {
-            std::cerr << "accept() failed: " << strerror(errno) << std::endl;
+            std::cout << "accept() failed: " << strerror(errno) << std::endl;
             continue;  // 继续等待新的连接
         }
 
@@ -104,6 +104,176 @@ bool Socket::tcpServer(int port)
     close(listenSocket);
     return true;
 }
+
+
+
+bool Socket::tcpClientSync(std::string ip, int port)
+{
+    bool status = false;
+
+    while (true)
+    {
+        // 创建套接字
+        int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if (clientSocket < 0)
+        {
+            std::cout << "Failed to create socket" << std::endl;
+            return false;
+        }
+
+        // 设置服务器信息
+        sockaddr_in serverAddress;
+        serverAddress.sin_family = AF_INET;
+        serverAddress.sin_port = htons(port);
+        if (inet_pton(AF_INET, ip.c_str(), &(serverAddress.sin_addr)) <= 0)
+        {
+            std::cout << "Invalid address/Address not supported" << std::endl;
+            close(clientSocket);
+            return false;
+        }
+
+        while (true)
+        {
+            // 连接到服务器
+            int is_con = connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+            if (is_con < 0)
+            {
+                std::cout << "Connection failed" << std::endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(RECONNECT_TIME));  // 等待重新连接
+                continue;
+            }
+
+            while (true)
+            {
+                char buffer[1024];
+                memset(buffer, 0, sizeof(buffer));
+
+                // 接收数据 (都是 <0 出错 =0 连接关闭 >0 接收到数据大小)
+                ssize_t is_rec = recv(clientSocket, buffer, sizeof(buffer), 0);
+                if (is_rec == 0)
+                {
+                    std::cout << "Server disconnection and reconnection " << std::endl;
+                    break;
+                }
+                else if (is_rec < 0)
+                {
+                    std::cout << "Failed to receive data" << std::endl;
+                }
+                else
+                {
+                    // 输出接收到的数据
+                    std::cout << "TCP client sync received data from server: " << buffer << std::endl;
+                }
+                std::cout << "---------- get once data -----------" << std::endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(RE_READ_TIME));  // 等待重新读取
+            }
+
+            // 跳出循环关闭 socket 然后从新建立 socket 重新连接
+            close(clientSocket);
+            std::this_thread::sleep_for(std::chrono::milliseconds(RECONNECT_TIME));  // 等待重新连接
+            break;
+        }
+    }
+
+    return true;
+}
+
+bool Socket::tcpClientAsyn(std::string ip, int port)
+{
+    while (true)
+    {
+        // 创建套接字
+        int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if (clientSocket < 0)
+        {
+            std::cout << "Failed to create socket" << std::endl;
+            return false;
+        }
+
+        // 设置服务器信息
+        sockaddr_in serverAddress;
+        serverAddress.sin_family = AF_INET;
+        serverAddress.sin_port = htons(port);
+        if (inet_pton(AF_INET, ip.c_str(), &(serverAddress.sin_addr)) <= 0)
+        {
+            std::cout << "Invalid address/Address not supported" << std::endl;
+            close(clientSocket);
+            return false;
+        }
+
+        // 连接到服务器
+        if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0)
+        {
+            std::cout << "Connection failed" << std::endl;
+            close(clientSocket);
+            std::this_thread::sleep_for(std::chrono::milliseconds(RECONNECT_TIME));
+            continue;
+        }
+
+        fd_set readfds;
+        while (true)
+        {
+            // 清空并设置文件描述符集合
+            FD_ZERO(&readfds);
+            FD_SET(clientSocket, &readfds);
+
+            // 设置超时
+            struct timeval timeout;
+            timeout.tv_sec = 1;  // 1秒超时
+            timeout.tv_usec = 0;
+
+            // 监视套接字
+            int activity = select(clientSocket + 1, &readfds, nullptr, nullptr, &timeout);
+            if (activity < 0)
+            {
+                std::cout << "Select error" << std::endl;
+                break;
+            }
+            else if (activity == 0)
+            {
+                // 超时，没有数据可读
+                std::cout << "No data received, continue waiting..." << std::endl;
+                continue;
+            }
+
+            // 有数据可读
+            if (FD_ISSET(clientSocket, &readfds))
+            {
+                char buffer[1024];
+                memset(buffer, 0, sizeof(buffer));
+
+                // 接收数据
+                ssize_t is_rec = recv(clientSocket, buffer, sizeof(buffer), 0);
+                if (is_rec == 0)
+                {
+                    std::cout << "Server disconnection, reconnecting..." << std::endl;
+                    break;
+                }
+                else if (is_rec < 0)
+                {
+                    std::cout << "Failed to receive data" << std::endl;
+                }
+                else
+                {
+                    // 输出接收到的数据
+                    std::cout << "TCP client async received data from server: " << buffer << std::endl;
+                }
+                std::cout << "---------- get once data -----------" << std::endl;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(RE_READ_TIME));
+        }
+
+        close(clientSocket);
+        std::this_thread::sleep_for(std::chrono::milliseconds(RECONNECT_TIME));
+    }
+
+    return true;
+}
+
+
+
+
+
 
 
 

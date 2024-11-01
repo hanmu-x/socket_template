@@ -21,6 +21,18 @@ class Socket
     /// <param name="port"></param>
     /// <returns></returns>
     static bool tcpServer(int port);
+
+    /// <summary>
+    /// 同步 TCP socket 客户端
+    /// </summary>
+    /// <param name="ip"></param>
+    /// <param name="port"></param>
+    /// <returns></returns>
+    static bool tcpClientSync(std::string ip, int port);
+
+    static bool tcpClientAsyn(std::string ip, int port);
+
+
 };
 
 
