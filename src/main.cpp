@@ -10,9 +10,9 @@ int main()
     int port = 8080;                   // 服务器端口号
 
 
-    //// tcp server test
-    //Socket::tcpServer(port);
-    //return 0;
+    // tcp server test
+    Socket::tcpServer(port);
+    return 0;
 
     //// if (Socket::tcpClientSync(ip, port))  // 同步
     //Socket so;
@@ -35,15 +35,15 @@ int main()
     //    std::cout << "TCP client failed" << std::endl;
     //}
 
-    // udp 接收
-    if (Socket::receiveData(ip, port))  // 同步
-    {
-        std::cout << "TCP client executed successfully" << std::endl;
-    }
-    else
-    {
-        std::cout << "TCP client failed" << std::endl;
-    }
+    //// udp 接收
+    //if (Socket::receiveData(ip, port))  // 同步
+    //{
+    //    std::cout << "TCP client executed successfully" << std::endl;
+    //}
+    //else
+    //{
+    //    std::cout << "TCP client failed" << std::endl;
+    //}
 
 
 

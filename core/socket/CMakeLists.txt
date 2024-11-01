@@ -12,7 +12,11 @@ endforeach()
 
 add_library(${PROJECT_NAME} STATIC ${SRC})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ws2_32)
+#target_link_libraries(${PROJECT_NAME} PUBLIC ws2_32)
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ws2_32)
+endif()
+
 
 #find_package(asio CONFIG REQUIRED)
 #target_link_libraries(${PROJECT_NAME} STATIC asio::asio)
