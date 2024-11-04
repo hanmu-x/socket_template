@@ -378,10 +378,6 @@ bool Socket::updSend(std::string ip, int port)
 }
 
 
-bool Socket::udpServer(std::string ip, int port)
-{
-    return false;
-}
 
 
 bool Socket::updClientSync(std::string ip, int port)
@@ -544,18 +540,23 @@ bool Socket::udpReceive(std::string ip, int port)
     // 绑定套接字到本地地址和端口
     if (bind(clientSocket, (sockaddr*)&localAddress, sizeof(localAddress)) == SOCKET_ERROR)
     {
-        std::cout << "Bind failed" << std::endl;
+        std::cout << "Bind failed with error: " << WSAGetLastError() << std::endl;
         closesocket(clientSocket);
         WSACleanup();
         return false;
     }
 
+    std::cout << "Listening for UDP messages on " << ip << ":" << port << "...\n";
+
     while (true)
     {
         char buffer[1024];
         memset(buffer, 0, sizeof(buffer));
-        int serverAddrSize = sizeof(localAddress);  // 这里使用 localAddress 来接收发送方的信息
-        int recvBytes = recvfrom(clientSocket, buffer, sizeof(buffer), 0, (sockaddr*)&localAddress, &serverAddrSize);
+
+        sockaddr_in senderAddress;
+        int senderAddrSize = sizeof(senderAddress);
+
+        int recvBytes = recvfrom(clientSocket, buffer, sizeof(buffer), 0, (sockaddr*)&senderAddress, &senderAddrSize);
         if (recvBytes == SOCKET_ERROR)
         {
             int error = WSAGetLastError();
@@ -565,10 +566,9 @@ bool Socket::udpReceive(std::string ip, int port)
         else
         {
             buffer[recvBytes] = '\0';
-            std::cout << "UDP client received data from server: " << buffer << std::endl;
+            std::cout << "UDP client received data from " << inet_ntoa(senderAddress.sin_addr) << ":" << ntohs(senderAddress.sin_port) << ": " << buffer << std::endl;
         }
-        std::cout << ".";
-        std::this_thread::sleep_for(std::chrono::milliseconds(RE_READ_TIME));
+
     }
 
     closesocket(clientSocket);

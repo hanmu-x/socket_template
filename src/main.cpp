@@ -12,7 +12,7 @@
 int main()
 {
     std::string ip = "192.168.0.214";  // 服务器IP地址
-    int port = 8080;                   // 服务器端口号
+    int port = 8081;                   // 服务器端口号
 
 
     //// tcp server test
@@ -40,8 +40,11 @@ int main()
     //    std::cout << "TCP client failed" << std::endl;
     //}
 
+    // 绑定本地的IP地址和端口
+    std::string udpIP = "192.168.0.214";
+    int udpPort = 8081;
     // udp 接收
-    if (Socket::udpReceive(ip, port))  // 同步
+    if (Socket::udpReceive(udpIP, udpPort))  // 同步
     {
         std::cout << "TCP client executed successfully" << std::endl;
     }

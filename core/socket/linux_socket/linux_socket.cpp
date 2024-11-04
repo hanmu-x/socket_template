@@ -336,21 +336,32 @@ bool Socket::udpReceive(const std::string& ip, const int& port)
         return false;
     }
 
+    // 设置 socket 选项
+    int opt = 1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+    {
+        perror("setsockopt");
+        close(sockfd);
+        return false;
+    }
+
     // 服务器地址设置
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
-    //if (inet_pton(AF_INET, ip.c_str(), &server_addr.sin_addr) <= 0)
-    //{
-    //    perror("inet_pton");
-    //    close(sockfd);
-    //    return false;
-    //}
+
+    // 将 IP 地址转换为网络字节序
+    if (inet_pton(AF_INET, ip.c_str(), &server_addr.sin_addr) <= 0)
+    {
+        perror("inet_pton");
+        close(sockfd);
+        return false;
+    }
 
     // 绑定Socket
     if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
     {
-        std::cout << "bind error:" << ip << ":" << port << std::endl    ;
+        std::cout << "bind error: " << ip << ":" << port << std::endl;
         perror("bind");
         close(sockfd);
         return false;
@@ -358,19 +369,22 @@ bool Socket::udpReceive(const std::string& ip, const int& port)
 
     std::cout << "Listening for UDP messages on " << ip << ":" << port << "...\n";
 
-    // 接收数据
-    ssize_t received_bytes = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&client_addr, &addr_len);
-    if (received_bytes < 0)
+    // 循环接收数据
+    while (true)
     {
-        perror("recvfrom");
-        close(sockfd);
-        return false;
+        ssize_t received_bytes = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&client_addr, &addr_len);
+        if (received_bytes < 0)
+        {
+            perror("recvfrom");
+            close(sockfd);
+            return false;
+        }
+
+        buffer[received_bytes] = '\0';  // 添加字符串结束符
+        std::cout << "Received " << received_bytes << " bytes: " << buffer << std::endl;
     }
 
-    buffer[received_bytes] = '\0';  // 添加字符串结束符
-    std::cout << "Received " << received_bytes << " bytes: " << buffer << std::endl;
-
-    // 关闭Socket
+    // 关闭Socket（这里实际上永远不会达到，除非发生错误）
     close(sockfd);
     return true;
 }

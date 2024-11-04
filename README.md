@@ -21,6 +21,10 @@ UDP:
 	接收数据
 
 
+使用 把core目录下的socket文件复制到你的项目里
 
+CMakeLists.txt 文件中 添加 `add_subdirectory(socket)`
+
+然后调用这个socket的程序中连接一下 `target_link_libraries(${PROJECT_NAME} PUBLIC socket_tool)`
 
 
