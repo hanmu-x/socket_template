@@ -16,23 +16,23 @@ class Socket
     /// <summary>
     /// TCP 服务端
     /// </summary>
-    /// <param name="port"></param>
+    /// <param name="port">服务端IP</param>
     /// <returns></returns>
     static bool tcpServer( int port);
 
     /// <summary>
     /// 同步 TCP socket 客户端
     /// </summary>
-    /// <param name="ip"></param>
-    /// <param name="port"></param>
+    /// <param name="ip">服务端IP</param>
+    /// <param name="port">服务端端口</param>
     /// <returns></returns>
     static bool tcpClientSync(std::string ip, int port);
 
     /// <summary>
     /// 异步 TCP socket 客户端
     /// </summary>
-    /// <param name="ip"></param>
-    /// <param name="port"></param>
+    /// <param name="ip">服务端IP</param>
+    /// <param name="port">服务端端口</param>
     /// <returns></returns>
     bool tcpClientAsyn(std::string ip, int port);
 
@@ -51,16 +51,8 @@ class Socket
     /// <param name="ip">本地IP</param>
     /// <param name="port">本地端口号</param>
     /// <returns></returns>
-    static bool udpReceive(std::string ip, int port);
+    static bool udpReceiveSync(std::string ip, int port);
 
-
-    /// <summary>
-    /// 同步 UDP socket 客户端
-    /// </summary>
-    /// <param name="ip"></param>
-    /// <param name="port"></param>
-    /// <returns></returns>
-    static bool updClientSync(std::string ip, int port);
 
     /// <summary>
     /// 异步 UDP socket 客户端
@@ -68,7 +60,7 @@ class Socket
     /// <param name="ip"></param>
     /// <param name="port"></param>
     /// <returns></returns>
-    static bool updClientAsyn(std::string ip, int port);
+    static bool udpReceiveAsyn(std::string ip, int port);
 
     Socket() = default;
     ~Socket() = default;

@@ -52,7 +52,7 @@ class Socket
     /// <param name="ip">本地IP</param>
     /// <param name="port">本地端口号</param>
     /// <returns></returns>
-    static bool udpReceive(const std::string& ip, const int& port);
+    static bool udpReceiveSync(const std::string& ip, const int& port);
 
 };
 

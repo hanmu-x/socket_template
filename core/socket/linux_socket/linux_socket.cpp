@@ -321,7 +321,7 @@ bool Socket::updSend(const std::string& ip, const int& port)
 
 
 
-bool Socket::udpReceive(const std::string& ip, const int& port)
+bool Socket::udpReceiveSync(const std::string& ip, const int& port)
 {
     int sockfd;
     struct sockaddr_in server_addr, client_addr;

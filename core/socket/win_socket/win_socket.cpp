@@ -4,6 +4,7 @@
 #include <cstring>
 #include <thread>
 #include <chrono>
+#include <vector>
 
 #define MAX_BUFFER_SIZE 1024
 #define RECONNECT_TIME 1000
@@ -35,9 +36,9 @@ void HandleClientConnection(SOCKET clientSocket)
 // 向客户端发送数据
 void SendDataToClient(SOCKET clientSocket)
 {
-    //char message[] = "Hello from the server!";
-    //send(clientSocket, message, static_cast<int>(strlen(message)), 0);
-    //std::cout << "Sent data to client: " << message << std::endl;
+    // char message[] = "Hello from the server!";
+    // send(clientSocket, message, static_cast<int>(strlen(message)), 0);
+    // std::cout << "Sent data to client: " << message << std::endl;
     while (true)
     {
         send(clientSocket, ".", static_cast<int>(strlen(".")), 0);
@@ -72,7 +73,6 @@ void AcceptAndHandleConnection(SOCKET listenSocket)
 }
 
 
-
 bool Socket::tcpServer(int port)
 {
     // 初始化Winsock, 初始化 Winsock 库，使用版本 2.2
@@ -93,10 +93,10 @@ bool Socket::tcpServer(int port)
         exit(EXIT_FAILURE);
     }
 
-    sockaddr_in service; // 套接字地址
-    service.sin_family = AF_INET; // IPv4 地址族
-    service.sin_addr.s_addr = INADDR_ANY; // 使用 INADDR_ANY 允许接受任意客户端的连接
-    service.sin_port = htons(port); // 将端口号转换为网络字节序
+    sockaddr_in service;                   // 套接字地址
+    service.sin_family = AF_INET;          // IPv4 地址族
+    service.sin_addr.s_addr = INADDR_ANY;  // 使用 INADDR_ANY 允许接受任意客户端的连接
+    service.sin_port = htons(port);        // 将端口号转换为网络字节序
 
     // 绑定套接字到指定的地址和端口
     if (bind(listenSocket, (SOCKADDR*)&service, sizeof(service)) == SOCKET_ERROR)
@@ -260,6 +260,7 @@ void Socket::DataReceiver(SOCKET clientSocket)
     return;
 }
 
+
 bool Socket::tcpClientAsyn(std::string ip, int port)
 {
     WSADATA wsaData;
@@ -313,7 +314,7 @@ bool Socket::tcpClientAsyn(std::string ip, int port)
                 int n = 0;
                 while (is_Running)
                 {
-                    //std::cout << n++ << std::endl;
+                    // std::cout << n++ << std::endl;
                     std::this_thread::sleep_for(std::chrono::milliseconds(RECONNECT_TIME));  // 等待1秒后重新连接
                 }
             }
@@ -378,144 +379,7 @@ bool Socket::updSend(std::string ip, int port)
 }
 
 
-
-
-bool Socket::updClientSync(std::string ip, int port)
-{
-    WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-    {
-        std::cout << "Failed to initialize winsock" << std::endl;
-        return false;
-    }
-
-    SOCKET clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
-    if (clientSocket == INVALID_SOCKET)
-    {
-        std::cout << "Failed to create socket" << std::endl;
-        WSACleanup();
-        return false;
-    }
-
-    sockaddr_in serverAddress;
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(port);
-    int is_conn = inet_pton(AF_INET, ip.c_str(), &(serverAddress.sin_addr));
-    if (is_conn <= 0)
-    {
-        std::cout << "Invalid address/Address not supported" << std::endl;
-        closesocket(clientSocket);
-        WSACleanup();
-        return false;
-    }
-
-    while (true)
-    {
-        // Send data to the server
-        std::string message = "Hello, UDP Server!";
-        if (sendto(clientSocket, message.c_str(), message.length(), 0, (sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR)
-        {
-            std::cout << "Failed to send data" << std::endl;
-        }
-        else
-        {
-            std::cout << "Sent data to server: " << message << std::endl;
-        }
-
-        while (true)
-        {
-            char buffer[1024];
-            memset(buffer, 0, sizeof(buffer));
-            // Receive data from the server
-            int serverAddrSize = sizeof(serverAddress);
-            //MSG_WAITALL：尝试接收全部请求的数据。函数可能会阻塞，直到收到所有数据。
-            //MSG_PEEK：查看即将接收的数据，但不从套接字缓冲区中删除它【1】。
-            int flags = 0;  // MSG_DONTWAIT 表示非阻塞接收, 0 表示
-            int recvBytes = recvfrom(clientSocket, buffer, sizeof(buffer), flags, (sockaddr*)&serverAddress, &serverAddrSize);
-            if (recvBytes == SOCKET_ERROR)
-            {
-                //std::cout << "Failed to receive data" << std::endl;
-                break;
-            }
-            else
-            {
-                buffer[recvBytes] = '\0';
-                std::cout << "UDP client received data from server: " << buffer << std::endl;
-            }
-            std::cout << ".";
-            std::this_thread::sleep_for(std::chrono::milliseconds(RE_READ_TIME));
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(RECONNECT_TIME));
-    }
-
-    closesocket(clientSocket);
-    WSACleanup();
-    return true;
-}
-
-
-
-
-//bool Socket::receiveData(std::string ip, int port)
-//{
-//    WSADATA wsaData;
-//    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-//    {
-//        std::cout << "Failed to initialize winsock" << std::endl;
-//        return false;
-//    }
-//
-//    SOCKET clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
-//    if (clientSocket == INVALID_SOCKET)
-//    {
-//        std::cout << "Failed to create socket" << std::endl;
-//        WSACleanup();
-//        return false;
-//    }
-//
-//    sockaddr_in serverAddress;
-//    serverAddress.sin_family = AF_INET;
-//    serverAddress.sin_port = htons(port);
-//    int is_conn = inet_pton(AF_INET, ip.c_str(), &(serverAddress.sin_addr));
-//    if (is_conn <= 0)
-//    {
-//        std::cout << "Invalid address/Address not supported" << std::endl;
-//        closesocket(clientSocket);
-//        WSACleanup();
-//        return false;
-//    }
-//
-//    while (true)
-//    {
-//        char buffer[1024];
-//        memset(buffer, 0, sizeof(buffer));
-//        // Receive data from the server
-//        int serverAddrSize = sizeof(serverAddress);
-//        // MSG_WAITALL：尝试接收全部请求的数据。函数可能会阻塞，直到收到所有数据。
-//        // MSG_PEEK：查看即将接收的数据，但不从套接字缓冲区中删除它【1】。
-//        int flags = 0;  // MSG_DONTWAIT 表示非阻塞接收, 0 表示
-//        int recvBytes = recvfrom(clientSocket, buffer, sizeof(buffer), flags, (sockaddr*)&serverAddress, &serverAddrSize);
-//        if (recvBytes == SOCKET_ERROR)
-//        {
-//            // std::cout << "Failed to receive data" << std::endl;
-//            continue;
-//        }
-//        else
-//        {
-//            buffer[recvBytes] = '\0';
-//            std::cout << "UDP client received data from server: " << buffer << std::endl;
-//        }
-//        std::cout << ".";
-//        std::this_thread::sleep_for(std::chrono::milliseconds(RE_READ_TIME));
-//    }
-//
-//    closesocket(clientSocket);
-//    WSACleanup();
-//    return true;
-//}
-
-bool Socket::udpReceive(std::string ip, int port)
+bool Socket::udpReceiveSync(std::string ip, int port)
 {
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
@@ -568,7 +432,7 @@ bool Socket::udpReceive(std::string ip, int port)
             buffer[recvBytes] = '\0';
             std::cout << "UDP client received data from " << inet_ntoa(senderAddress.sin_addr) << ":" << ntohs(senderAddress.sin_port) << ": " << buffer << std::endl;
         }
-
+        std::cout << ".";
     }
 
     closesocket(clientSocket);
@@ -578,68 +442,13 @@ bool Socket::udpReceive(std::string ip, int port)
 
 
 
-
-
-
-
-//{
-//    // Initialize Winsock
-//    WSADATA wsaData;
-//    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-//    {
-//        std::cout << "WSAStartup failed." << std::endl;
-//        return false;
-//    }
-//
-//    // Create a UDP socket
-//    SOCKET clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
-//    if (clientSocket == INVALID_SOCKET)
-//    {
-//        std::cout << "Error creating socket: " << WSAGetLastError() << std::endl;
-//        WSACleanup();
-//        return false;
-//    }
-//
-//    // Server address information
-//    sockaddr_in serverAddr;
-//    serverAddr.sin_family = AF_INET;
-//    serverAddr.sin_port = htons(port);
-//    serverAddr.sin_addr.s_addr = inet_addr(ip.c_str());
-//
-//    // Send data to the server
-//    std::string message = "Hello, UDP Server!";
-//    if (sendto(clientSocket, message.c_str(), message.length(), 0, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
-//    {
-//        std::cout << "Error sending data: " << WSAGetLastError() << std::endl;
-//        closesocket(clientSocket);
-//        WSACleanup();
-//        return false;
-//    }
-//
-//    // Receive response from the server
-//    char buffer[1024];
-//    int recvBytes = recvfrom(clientSocket, buffer, sizeof(buffer), 0, nullptr, nullptr);
-//    if (recvBytes == SOCKET_ERROR)
-//    {
-//        std::cout << "Error receiving data: " << WSAGetLastError() << std::endl;
-//    }
-//    else
-//    {
-//        buffer[recvBytes] = '\0';
-//        std::cout << "Received from server: " << buffer << std::endl;
-//    }
-//
-//    // Cleanup
-//    closesocket(clientSocket);
-//    WSACleanup();
-//
-//    return true;
-//}
-
-// 异步
-bool Socket::updClientAsyn(std::string ip, int port)
+bool Socket::udpReceiveAsyn(std::string ip, int port)
 {
-    return false;
+    return true;
 }
+
+
+
+
 
 

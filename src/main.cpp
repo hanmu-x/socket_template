@@ -44,7 +44,7 @@ int main()
     std::string udpIP = "192.168.0.214";
     int udpPort = 8081;
     // udp 接收
-    if (Socket::udpReceive(udpIP, udpPort))  // 同步
+    if (Socket::udpReceiveSync(udpIP, udpPort))  // 同步
     {
         std::cout << "TCP client executed successfully" << std::endl;
     }
@@ -52,7 +52,6 @@ int main()
     {
         std::cout << "TCP client failed" << std::endl;
     }
-
 
 
 
