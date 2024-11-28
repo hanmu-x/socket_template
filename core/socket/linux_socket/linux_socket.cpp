@@ -9,9 +9,6 @@
 #define RECONNECT_TIME 1000
 #define RE_READ_TIME 10
 
-
-
-
 // 向客户端发送数据
 void SendDataToClient(int clientSocket)
 {
@@ -104,7 +101,6 @@ bool Socket::tcpServer(const int& port)
     close(listenSocket);
     return true;
 }
-
 
 bool Socket::tcpClientSync(const std::string& ip, const int& port)
 {
@@ -269,7 +265,6 @@ bool Socket::tcpClientAsyn(const std::string& ip, const int& port)
     return true;
 }
 
-
 bool Socket::updSend(const std::string& ip, const int& port)
 {
     int sockfd;
@@ -308,18 +303,15 @@ bool Socket::updSend(const std::string& ip, const int& port)
         }
         else
         {
-            std::cout << "Sent " << sent_bytes << " bytes: " << message ;
+            std::cout << "Sent " << sent_bytes << " bytes: " << message;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(RECONNECT_TIME));
-
     }
 
     // 关闭Socket
     close(sockfd);
     return true;
 }
-
-
 
 bool Socket::udpReceiveSync(const std::string& ip, const int& port)
 {
@@ -388,22 +380,3 @@ bool Socket::udpReceiveSync(const std::string& ip, const int& port)
     close(sockfd);
     return true;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

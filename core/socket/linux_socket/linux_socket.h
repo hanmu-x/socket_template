@@ -7,7 +7,6 @@
 #include <mutex>
 #include <thread>
 
-
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -53,9 +52,6 @@ class Socket
     /// <param name="port">本地端口号</param>
     /// <returns></returns>
     static bool udpReceiveSync(const std::string& ip, const int& port);
-
 };
 
-
 #endif  // SOCKET_H
-

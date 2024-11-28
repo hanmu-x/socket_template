@@ -72,7 +72,6 @@ void AcceptAndHandleConnection(SOCKET listenSocket)
     SendData.join();
 }
 
-
 bool Socket::tcpServer(int port)
 {
     // 初始化Winsock, 初始化 Winsock 库，使用版本 2.2
@@ -142,7 +141,6 @@ bool Socket::tcpServer(int port)
     WSACleanup();
     return true;
 }
-
 
 bool Socket::tcpClientSync(std::string ip, int port)
 {
@@ -228,7 +226,6 @@ bool Socket::tcpClientSync(std::string ip, int port)
     return true;
 }
 
-
 void Socket::DataReceiver(SOCKET clientSocket)
 {
     std::unique_lock lock_t(m_lock);
@@ -259,7 +256,6 @@ void Socket::DataReceiver(SOCKET clientSocket)
     lock_t.unlock();
     return;
 }
-
 
 bool Socket::tcpClientAsyn(std::string ip, int port)
 {
@@ -328,7 +324,6 @@ bool Socket::tcpClientAsyn(std::string ip, int port)
     return true;
 }
 
-
 bool Socket::updSend(std::string ip, int port)
 {
     WSADATA wsaData;
@@ -377,7 +372,6 @@ bool Socket::updSend(std::string ip, int port)
     WSACleanup();
     return true;
 }
-
 
 bool Socket::udpReceiveSync(std::string ip, int port)
 {
@@ -440,15 +434,7 @@ bool Socket::udpReceiveSync(std::string ip, int port)
     return true;
 }
 
-
-
 bool Socket::udpReceiveAsyn(std::string ip, int port)
 {
     return true;
 }
-
-
-
-
-
-

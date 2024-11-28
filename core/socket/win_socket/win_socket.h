@@ -7,7 +7,6 @@
 #include <mutex>
 #include <thread>
 
-
 #include <winsock2.h>
 
 class Socket
@@ -18,7 +17,7 @@ class Socket
     /// </summary>
     /// <param name="port">服务端IP</param>
     /// <returns></returns>
-    static bool tcpServer( int port);
+    static bool tcpServer(int port);
 
     /// <summary>
     /// 同步 TCP socket 客户端
@@ -36,7 +35,6 @@ class Socket
     /// <returns></returns>
     bool tcpClientAsyn(std::string ip, int port);
 
-
     /// <summary>
     /// UDP socket 发送数据
     /// </summary>
@@ -53,7 +51,6 @@ class Socket
     /// <returns></returns>
     static bool udpReceiveSync(std::string ip, int port);
 
-
     /// <summary>
     /// 异步 UDP socket 客户端
     /// </summary>
@@ -66,7 +63,6 @@ class Socket
     ~Socket() = default;
 
   private:
-
     // 异步socket接收数据的函数
     void DataReceiver(SOCKET clientSocket);
     std::thread receiverThread;
@@ -76,8 +72,4 @@ class Socket
     std::mutex m_lock;  // 子线程锁
 };
 
-
-
-
-#endif // SOCKET_H
-
+#endif  // SOCKET_H
